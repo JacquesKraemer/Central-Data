@@ -1,0 +1,6 @@
+# Archivos a ignorar 
+**/graphs.py
+**/tipo_cambio.py
+/bcra.venv/
+/__pycache__/
+/.vscode/
