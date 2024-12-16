@@ -46,7 +46,7 @@ with tab1:
 with tab2:
 
     # Subtítulo
-    st.markdown("<h3 style='text-align: center;'>Principales variables</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='text-align: left;'>Principales variables</h3>", unsafe_allow_html=True)
 
 
     # Función para obtener las principales variables
@@ -155,6 +155,9 @@ with tab2:
         else:
             st.warning("No se encontraron datos para los parámetros ingresados. Pruebe modificando las fechas seleccionadas", icon="⚠️")
 with tab3:
+    
+    st.markdown("<h3 style='text-align: left;'>Divisas</h3>", unsafe_allow_html=True)
+
     def obtener_cotizaciones(moneda, fecha_desde, fecha_hasta):
         base_url = "https://api.bcra.gob.ar/estadisticascambiarias/v1.0/Cotizaciones/"
         url =f"{base_url}{moneda}?fechadesde={fecha_desde}&fechahasta={fecha_hasta}"
@@ -197,6 +200,15 @@ with tab3:
             print(f"HTTP error occurred: {err}")
 
     # Detallar codigo de moneda, fecha desde y fecha hasta.
+    url_master = "https://api.bcra.gob.ar/estadisticascambiarias/v1.0/Maestros/Divisas"
+    divisas = requests.get(url_master, verify=False)
+    div_data = divisas.json()
+    div_list = div_data["results"]
+
+    df = pd.DataFrame(div_list)
+    codigos = df["codigo"]
+
+    cod_divisa = st.selectbox("Seleccione una variable para filtrar:", codigos)
     desde = st.date_input("Desde:", value=pd.to_datetime("2020-01-01"))
     hasta = st.date_input("Hasta:", value=pd.to_datetime("2024-12-10"))
 
@@ -204,12 +216,11 @@ with tab3:
     hasta_str = hasta.strftime("%Y-%m-%d")
     
     if st.button("Dolar oficial"):
-        df_ch = obtener_cotizaciones("USD", desde_str, hasta_str)
+        df_ch = obtener_cotizaciones(cod_divisa, desde_str, hasta_str)
 
         fig_pv = px.line(df_ch, x="Fecha", y="Cotización", title=f"Evolución del tipo de cambio oficial (USD)")
         fig_pv.update_layout(
-            title={"text": f"Evolución del tipo de cambio oficial (USD) <br><sub>{desde} a {hasta}</sub>",
-                })
+            title={"text": f"Evolución del tipo de cambio oficial ({cod_divisa}) <br><sub>{desde} a {hasta}</sub>"})
 
         st.plotly_chart(fig_pv)    
 
