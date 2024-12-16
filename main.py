@@ -208,14 +208,14 @@ with tab3:
     df = pd.DataFrame(div_list)
     codigos = df["codigo"]
 
-    cod_divisa = st.selectbox("Seleccione una variable para filtrar:", codigos)
+    cod_divisa = st.selectbox("Seleccione una divisa:", codigos)
     desde = st.date_input("Desde:", value=pd.to_datetime("2020-01-01"))
     hasta = st.date_input("Hasta:", value=pd.to_datetime("2024-12-10"))
 
     desde_str = desde.strftime("%Y-%m-%d")
     hasta_str = hasta.strftime("%Y-%m-%d")
     
-    if st.button("Dolar oficial"):
+    if st.button("Obtener cotización"):
         df_ch = obtener_cotizaciones(cod_divisa, desde_str, hasta_str)
 
         fig_pv = px.line(df_ch, x="Fecha", y="Cotización", title=f"Evolución del tipo de cambio oficial (USD)")
